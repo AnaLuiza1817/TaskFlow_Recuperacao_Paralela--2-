@@ -1,6 +1,8 @@
+
 <?php
 require '../config/database.php';
-$id = (int) ($_POST['id'] ?? 0);
+
+$id = (int)($_POST['id'] ?? 0);
 
 $d = [
     trim($_POST['titulo'] ?? ''),
@@ -12,9 +14,17 @@ $d = [
     $_POST['status'] ?? 'Pendente'
 ];
 
+if ($d[0] === '') {
+    header('Location: form.php?erro=1');
+    exit;
+}
+
 if ($id) {
     $q = $pdo->prepare(
-        'UPDATE tarefas SET titulo=?, descricao=?, responsavel=?, categoria=?, prazo=?, prioridade=? WHERE id=?'
+        'UPDATE tarefas
+         SET titulo=?, descricao=?, responsavel=?, categoria=?,
+             prazo=?, prioridade=?, status=?
+         WHERE id=?'
     );
 
     $q->execute([
@@ -24,6 +34,7 @@ if ($id) {
         $d[3],
         $d[4],
         $d[5],
+        $d[6],
         $id
     ]);
 
@@ -31,13 +42,11 @@ if ($id) {
     exit;
 }
 
-if ($d[0] === '') {
-    header('Location: form.php?erro=1');
-    exit;
-}
-
+// Cadastro de nova tarefa
 $q = $pdo->prepare(
-    'INSERT INTO tarefas(titulo, descricao, responsavel, categoria, prazo, prioridade, status) VALUES(?,?,?,?,?,?,?)'
+    'INSERT INTO tarefas
+     (titulo, descricao, responsavel, categoria, prazo, prioridade, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?)'
 );
 
 $q->execute($d);
