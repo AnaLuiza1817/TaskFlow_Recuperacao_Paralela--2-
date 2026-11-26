@@ -1,4 +1,5 @@
-<?php require 'config/database.php';
+<?php 
+require 'config/database.php';
 $pageTitle = 'Dashboard';
 $total = $pdo->query('SELECT COUNT(*) FROM tarefas')->fetchColumn();
 $andamento = $pdo->query("SELECT COUNT(*) FROM tarefas WHERE status='Em andamento'")->fetchColumn();

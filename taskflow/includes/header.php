@@ -1,5 +1,9 @@
-<?php $pageTitle = $pageTitle ?? 'TaskFlow';
-$prefix = (strpos($_SERVER['PHP_SELF'], '/tarefas/') !== false || strpos($_SERVER['PHP_SELF'], '/chamados/') !== false) ? '../' : ''; ?>
+<?php 
+$pageTitle = $pageTitle ?? 'TaskFlow';
+
+$prefix = (strpos($_SERVER['PHP_SELF'], '/tarefas/') !== false || strpos($_SERVER['PHP_SELF'], '/chamados/') !== false) ? '../' : ''; 
+?>
+
 <!doctype html>
 <html lang="pt-BR">
 
