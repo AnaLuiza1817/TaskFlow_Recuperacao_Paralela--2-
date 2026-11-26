@@ -44,4 +44,3 @@ $q->execute($d);
 
 header('Location: index.php');
 exit;
-
