@@ -1,10 +1,6 @@
-
 <?php
 require 'config/database.php';
-
-$pageTitle = 'Dashboard';
-
-$total = $pdo->query('SELECT COUNT(*) FROM tarefas')->fetchColumn();
+$total_tarefas = $pdo->query('SELECT COUNT(*) FROM tarefas')->fetchColumn();
 
 $andamento = $pdo->query(
     "SELECT COUNT(*) FROM tarefas WHERE status='Em andamento'"
@@ -29,85 +25,58 @@ $recentes = $pdo->query(
 require 'includes/header.php';
 ?>
 
-<div class="head">
-    <div>
-        <p class="muted">VISÃO GERAL</p>
-        <h1>Dashboard</h1>
-        <p class="muted">Organize atividades e acompanhe entregas.</p>
+<div class="container">
+    <h1>VISÃO GERAL</h1>
+    <p>Dashboard - Organize atividades e acompanhe entregas.</p>
+
+    <a href="nova_tarefa.php" class="btn btn-primary">+ Nova tarefa</a>
+
+    <div class="row mt-4">
+        <div class="col">
+            <h3>Tarefas cadastradas</h3>
+            <p><?php echo $total_tarefas; ?></p>
+        </div>
+        <div class="col">
+            <h3>Em andamento</h3>
+            <p><?php echo $andamento; ?></p>
+        </div>
+        <div class="col">
+            <h3>Concluídas</h3>
+            <p><?php echo $concluidas; ?></p>
+        </div>
+        <div class="col">
+            <h3>Tarefas prioritárias (Alta)</h3>
+            <p><?php echo $prioritarias; ?></p>
+        </div>
+        <div class="col">
+            <h3>Chamados abertos</h3>
+            <p><?php echo $abertos; ?></p>
+        </div>
     </div>
 
-    <a class="btn" href="tarefas/form.php">+ Nova tarefa</a>
-</div>
+    <hr>
 
-<section class="stats">
+    <h2>Tarefas recentes</h2>
+    <a href="tarefas.php">Ver tarefas</a>
 
-    <div class="stat">
-        <span class="num"><?= $total ?></span>
-        Tarefas cadastradas
-    </div>
-
-    <div class="stat">
-        <span class="num"><?= $andamento ?></span>
-        Em andamento
-    </div>
-
-    <div class="stat">
-        <span class="num"><?= $concluidas ?></span>
-        Concluídas
-    </div>
-
-    <div class="stat">
-        <span class="num"><?= $prioritarias ?></span>
-        Tarefas prioritárias (Alta)
-    </div>
-
-    <div class="stat">
-        <span class="num"><?= $abertos ?></span>
-        Chamados abertos
-    </div>
-
-</section>
-
-<section class="panel">
-    <div class="head">
-        <h2>Tarefas recentes</h2>
-        <a class="btn gray" href="tarefas/index.php">Ver tarefas</a>
-    </div>
-
-    <div class="scroll">
-        <table>
+    <table class="table table-striped mt-3">
+        <thead>
             <tr>
                 <th>Tarefa</th>
                 <th>Responsável</th>
                 <th>Prioridade</th>
                 <th>Status</th>
             </tr>
-
-            <?php foreach ($recentes as $t): ?>
+        </thead>
+        <tbody>
+            <?php foreach ($recentes as $tarefa): ?>
                 <tr>
-                    <td><?= htmlspecialchars($t['titulo']) ?></td>
-                    <td><?= htmlspecialchars($t['responsavel']) ?></td>
-                    <td><?= htmlspecialchars($t['prioridade']) ?></td>
-                    <td><?= htmlspecialchars($t['status']) ?></td>
+                    <td><?php echo htmlspecialchars($tarefa['titulo']); ?></td>
+                    <td><?php echo htmlspecialchars($tarefa['responsavel']); ?></td>
+                    <td><?php echo htmlspecialchars($tarefa['prioridade']); ?></td>
+                    <td><?php echo htmlspecialchars($tarefa['status']); ?></td>
                 </tr>
             <?php endforeach; ?>
-
-        </table>
-    </div>
-</section>
-
-<section class="panel">
-    <h2>Central de chamados</h2>
-
-    <p>
-        Reproduza a falha, investigue o código,
-        corrija e registre os testes no fechamento.
-    </p>
-
-    <a class="btn gray" href="chamados/index.php">
-        Consultar chamados
-    </a>
-</section>
-
-<?php require 'includes/footer.php'; ?>
-
+        </tbody>
+    </table>
+</div>
