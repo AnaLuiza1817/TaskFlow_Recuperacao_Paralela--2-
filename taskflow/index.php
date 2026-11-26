@@ -1,6 +1,7 @@
 
 <?php
 require 'config/database.php';
+
 $pageTitle = 'Dashboard';
 
 $total = $pdo->query('SELECT COUNT(*) FROM tarefas')->fetchColumn();
@@ -10,7 +11,7 @@ $andamento = $pdo->query(
 )->fetchColumn();
 
 $concluidas = $pdo->query(
-    "SELECT COUNT(*) FROM tarefas WHERE status='Concluido'"
+    "SELECT COUNT(*) FROM tarefas WHERE status='Concluída'"
 )->fetchColumn();
 
 $abertos = $pdo->query(
@@ -109,3 +110,4 @@ require 'includes/header.php';
 </section>
 
 <?php require 'includes/footer.php'; ?>
+
