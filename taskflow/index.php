@@ -1,89 +1,111 @@
 
 <?php
-require '../config/database.php';
+require 'config/database.php';
+$pageTitle = 'Dashboard';
 
-$pageTitle = 'Tarefas';
-$status = $_GET['status'] ?? '';
+$total = $pdo->query('SELECT COUNT(*) FROM tarefas')->fetchColumn();
 
-$sql = 'SELECT * FROM tarefas';
-$params = [];
+$andamento = $pdo->query(
+    "SELECT COUNT(*) FROM tarefas WHERE status='Em andamento'"
+)->fetchColumn();
 
-if ($status !== '') {
-    $sql .= ' WHERE status = ?';
-    $params[] = $status;
-}
+$concluidas = $pdo->query(
+    "SELECT COUNT(*) FROM tarefas WHERE status='Concluido'"
+)->fetchColumn();
 
-$sql .= ' ORDER BY prazo';
+$abertos = $pdo->query(
+    "SELECT COUNT(*) FROM chamados WHERE status='Aberto'"
+)->fetchColumn();
 
-$q = $pdo->prepare($sql);
-$q->execute($params);
-$tarefas = $q->fetchAll();
+$prioritarias = $pdo->query(
+    "SELECT COUNT(*) FROM tarefas WHERE prioridade='Alta'"
+)->fetchColumn();
 
-require '../includes/header.php';
+$recentes = $pdo->query(
+    'SELECT * FROM tarefas ORDER BY id DESC LIMIT 5'
+)->fetchAll();
+
+require 'includes/header.php';
 ?>
 
 <div class="head">
     <div>
-        <h1>Tarefas</h1>
-        <p class="muted">Cadastre e acompanhe as atividades.</p>
+        <p class="muted">VISÃO GERAL</p>
+        <h1>Dashboard</h1>
+        <p class="muted">Organize atividades e acompanhe entregas.</p>
     </div>
 
-    <a class="btn" href="form.php">+ Nova tarefa</a>
+    <a class="btn" href="tarefas/form.php">+ Nova tarefa</a>
 </div>
 
+<section class="stats">
+
+    <div class="stat">
+        <span class="num"><?= $total ?></span>
+        Tarefas cadastradas
+    </div>
+
+    <div class="stat">
+        <span class="num"><?= $andamento ?></span>
+        Em andamento
+    </div>
+
+    <div class="stat">
+        <span class="num"><?= $concluidas ?></span>
+        Concluídas
+    </div>
+
+    <div class="stat">
+        <span class="num"><?= $prioritarias ?></span>
+        Tarefas prioritárias (Alta)
+    </div>
+
+    <div class="stat">
+        <span class="num"><?= $abertos ?></span>
+        Chamados abertos
+    </div>
+
+</section>
+
 <section class="panel">
-
-    <form method="get" style="display:flex;gap:10px;align-items:end">
-        <div class="field">
-            <label>Filtrar por status</label>
-
-            <select name="status">
-                <option value="">Todos</option>
-
-                <?php foreach (['Pendente', 'Em andamento', 'Concluída'] as $s): ?>
-                    <option value="<?= htmlspecialchars($s) ?>"
-                        <?= $status === $s ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($s) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <button class="btn gray">Filtrar</button>
-    </form>
+    <div class="head">
+        <h2>Tarefas recentes</h2>
+        <a class="btn gray" href="tarefas/index.php">Ver tarefas</a>
+    </div>
 
     <div class="scroll">
         <table>
             <tr>
                 <th>Tarefa</th>
                 <th>Responsável</th>
-                <th>Prazo</th>
                 <th>Prioridade</th>
                 <th>Status</th>
-                <th>Ações</th>
             </tr>
 
-            <?php foreach ($tarefas as $t): ?>
+            <?php foreach ($recentes as $t): ?>
                 <tr>
                     <td><?= htmlspecialchars($t['titulo']) ?></td>
                     <td><?= htmlspecialchars($t['responsavel']) ?></td>
-                    <td><?= date('d/m/Y', strtotime($t['prazo'])) ?></td>
                     <td><?= htmlspecialchars($t['prioridade']) ?></td>
                     <td><?= htmlspecialchars($t['status']) ?></td>
-
-                    <td>
-                        <a class="btn gray" href="form.php?id=<?= $t['id'] ?>">
-                            Editar
-                        </a>
-
-                        <a class="btn red" href="excluir.php?id=<?= $t['id'] ?>">
-                            Excluir
-                        </a>
-                    </td>
                 </tr>
             <?php endforeach; ?>
+
         </table>
     </div>
 </section>
 
-<?php require '../includes/footer.php'; ?>
+<section class="panel">
+    <h2>Central de chamados</h2>
+
+    <p>
+        Reproduza a falha, investigue o código,
+        corrija e registre os testes no fechamento.
+    </p>
+
+    <a class="btn gray" href="chamados/index.php">
+        Consultar chamados
+    </a>
+</section>
+
+<?php require 'includes/footer.php'; ?>
